@@ -1,7 +1,8 @@
 package com.goodvice.pumbtest.service;
 
-import com.goodvice.pumbtest.mapper.AnimalCsvMapper;
-import com.goodvice.pumbtest.mapper.AnimalFileMapper;
+import com.goodvice.pumbtest.mapper.AnimalCsvParser;
+import com.goodvice.pumbtest.mapper.AnimalFileParser;
+import com.goodvice.pumbtest.mapper.AnimalXmlParser;
 import com.goodvice.pumbtest.model.Animal;
 import com.goodvice.pumbtest.repository.AnimalRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +30,14 @@ public class AnimalService {
             return;
         }
 
-        AnimalFileMapper fileMapper;
+        AnimalFileParser fileMapper;
 
         switch (contentType) {
             case "text/csv":
-                fileMapper = new AnimalCsvMapper();
+                fileMapper = new AnimalCsvParser();
                 break;
             case "application/xml":
-                fileMapper = new AnimalXmlMapper();
+                fileMapper = new AnimalXmlParser();
                 break;
             default:
                 //todo handle unknown format send error unsupported
@@ -44,7 +45,8 @@ public class AnimalService {
         }
 
         try {
-            List<Animal> animalList = fileMapper.map(file);
+            List<Animal> animalList = fileMapper.parse(file);
+            animalRepository.save();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
