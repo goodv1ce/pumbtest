@@ -47,7 +47,7 @@ public class Animal {
     @JacksonXmlProperty(localName = "weight")
     @NotNull
     @Min(1)
-    private Integer weight;
+    public Integer weight;
 
     @JsonProperty("Cost")
     @JacksonXmlProperty(localName = "cost")

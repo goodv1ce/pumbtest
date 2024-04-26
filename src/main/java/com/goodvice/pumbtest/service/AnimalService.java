@@ -71,7 +71,7 @@ public class AnimalService {
 
         try {
             List<Animal> animalList = fileParser.parse(file);
-            validator.validateModel(animalList);
+            validator.validateModels(animalList);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(animalRepository.saveAll(animalList));

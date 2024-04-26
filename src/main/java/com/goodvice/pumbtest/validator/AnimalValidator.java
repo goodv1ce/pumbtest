@@ -23,7 +23,7 @@ public class AnimalValidator {
      *
      * @param arrayToValidate The list of Animal objects to validate.
      */
-    public void validateModel(List<Animal> arrayToValidate) {
+    public void validateModels(List<Animal> arrayToValidate) {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         Validator validator = validatorFactory.getValidator();
         List<Animal> invalidObjects = new ArrayList<>();
