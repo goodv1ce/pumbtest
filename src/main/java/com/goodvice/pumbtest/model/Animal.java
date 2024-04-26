@@ -10,6 +10,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * Represents an animal entity.
+ *
+ * @author goodvice
+ */
 @Data
 @Entity
 @NoArgsConstructor
@@ -49,6 +55,10 @@ public class Animal {
     @Min(1)
     private Integer cost;
 
+    /**
+     * The category of the animal.
+     * Do not parse from the file, the API sets the value
+     */
     @NotNull
     @Min(1)
     @Max(4)

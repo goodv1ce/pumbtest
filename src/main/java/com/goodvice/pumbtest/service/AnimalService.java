@@ -5,10 +5,11 @@ import com.goodvice.pumbtest.mapper.AnimalFileParser;
 import com.goodvice.pumbtest.mapper.AnimalXmlParser;
 import com.goodvice.pumbtest.model.Animal;
 import com.goodvice.pumbtest.repository.AnimalRepository;
-import com.goodvice.pumbtest.validator.AnimalParseValidator;
+import com.goodvice.pumbtest.validator.AnimalValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,14 +19,24 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service class for managing animal models before adding to the database.
+ */
 @Service
 @RequiredArgsConstructor
 public class AnimalService {
     private final AnimalRepository animalRepository;
-    private final AnimalParseValidator validator;
+    private final AnimalValidator validator;
 
+    /**
+     * Validates file and creates instance of the parser based on its media-type.
+     * After the parsing it passes a list of {@link Animal} objects to the repository
+     * for adding to the database.
+     *
+     * @param file The file containing animal data.
+     * @return A ResponseEntity with a status indicating the result of the operation.
+     */
     public ResponseEntity<?> addFromFile(MultipartFile file) {
-
         if (file == null || file.isEmpty()) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -46,9 +57,12 @@ public class AnimalService {
             case "text/csv":
                 fileParser = new AnimalCsvParser();
                 break;
+
             case "application/xml":
+            case "text/xml":
                 fileParser = new AnimalXmlParser();
                 break;
+
             default:
                 return ResponseEntity
                         .status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
@@ -57,7 +71,7 @@ public class AnimalService {
 
         try {
             List<Animal> animalList = fileParser.parse(file);
-            validator.validate(animalList);
+            validator.validateModel(animalList);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(animalRepository.saveAll(animalList));
@@ -69,6 +83,17 @@ public class AnimalService {
 
     }
 
+    /**
+     * Retrieves a list of {@link Animal} objects from the database.
+     * Can be filtered by type/category/sex field or by several at once.
+     * Can be sorted by any field.
+     *
+     * @param type     value of type for filter. If null, no field filtering will occur
+     * @param category value of category for filter. If null, no field filtering will occur
+     * @param sex      value of sex for filter. If null, no field filtering will occur
+     * @param sortBy   field name to be sorted by. If null, no sort will occur
+     * @return a list of {@link Animal} objects filtered/sorted.
+     */
     public ResponseEntity<?> getAllFiltered(String type,
                                             Integer category,
                                             String sex,
@@ -86,7 +111,13 @@ public class AnimalService {
         Example<Animal> example = Example.of(animal);
         List<Animal> queryResult;
         if (Objects.nonNull(sortBy)) {
-            queryResult = animalRepository.findAll(example, Sort.by(sortBy));
+            try {
+                queryResult = animalRepository.findAll(example, Sort.by(sortBy));
+            } catch (PropertyReferenceException e) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(e.getMessage());
+            }
         } else {
             queryResult = animalRepository.findAll(example);
         }

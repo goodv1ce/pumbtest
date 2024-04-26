@@ -11,9 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+
+/**
+ * Validates {@link Animal} objects based on constraints defined in the model.
+ */
 @Component
-public class AnimalParseValidator {
-    public void validate(List<Animal> arrayToValidate) {
+public class AnimalValidator {
+
+    /**
+     * Validates a list of {@link Animal} objects.
+     *
+     * @param arrayToValidate The list of Animal objects to validate.
+     */
+    public void validateModel(List<Animal> arrayToValidate) {
         ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         Validator validator = validatorFactory.getValidator();
         List<Animal> invalidObjects = new ArrayList<>();
@@ -27,6 +37,11 @@ public class AnimalParseValidator {
         arrayToValidate.removeAll(invalidObjects);
     }
 
+    /**
+     * Sets the category field value of the animal based on its cost.
+     *
+     * @param animal The Animal object to set category value.
+     */
     private void categorizeByPrice(Animal animal) {
         if (animal.getCost() == null) {
             return;
