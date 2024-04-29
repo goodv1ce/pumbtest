@@ -1,0 +1,230 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /files/uploads:
+    post:
+      tags:
+      - animal-controller
+      summary: Uploads data from a file
+      operationId: uploadFromFile
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+              - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "415":
+          description: Processing failed due to an unsupported media type.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "Error: Content type is unsupported for processing."
+        "500":
+          description: Parsing failed.
+          content:
+            text/plain:
+              schema:
+                type: object
+                properties:
+                  cause:
+                    type: object
+                    properties:
+                      stackTrace:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            classLoaderName:
+                              type: string
+                            moduleName:
+                              type: string
+                            moduleVersion:
+                              type: string
+                            methodName:
+                              type: string
+                            fileName:
+                              type: string
+                            lineNumber:
+                              type: integer
+                              format: int32
+                            className:
+                              type: string
+                            nativeMethod:
+                              type: boolean
+                      message:
+                        type: string
+                      localizedMessage:
+                        type: string
+                  stackTrace:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        classLoaderName:
+                          type: string
+                        moduleName:
+                          type: string
+                        moduleVersion:
+                          type: string
+                        methodName:
+                          type: string
+                        fileName:
+                          type: string
+                        lineNumber:
+                          type: integer
+                          format: int32
+                        className:
+                          type: string
+                        nativeMethod:
+                          type: boolean
+                  message:
+                    type: string
+                  suppressed:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        stackTrace:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              classLoaderName:
+                                type: string
+                              moduleName:
+                                type: string
+                              moduleVersion:
+                                type: string
+                              methodName:
+                                type: string
+                              fileName:
+                                type: string
+                              lineNumber:
+                                type: integer
+                                format: int32
+                              className:
+                                type: string
+                              nativeMethod:
+                                type: boolean
+                        message:
+                          type: string
+                        localizedMessage:
+                          type: string
+                  localizedMessage:
+                    type: string
+        "400":
+          description: Processing failed due to an invalid file.
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: "Error: File is null or empty. Unable to process."
+        "200":
+          description: Upload successful. The newly added data is included in the
+            response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Animal'
+  /files:
+    get:
+      tags:
+      - animal-controller
+      summary: Retrieves a list of animals filtered and/or sorted. Can be filtered
+        by type/category/sex and sorted by any field.
+      operationId: getAnimals
+      parameters:
+      - name: type
+        in: query
+        description: Type of the animal to be filtered by.
+        required: false
+        schema:
+          type: string
+        example: cat
+      - name: category
+        in: query
+        description: Category of the animal to be filtered by.
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: -1
+        example: 1
+      - name: sex
+        in: query
+        description: Sex of the animal to be filtered by.
+        required: false
+        schema:
+          type: string
+        example: female
+      - name: sortBy
+        in: query
+        description: Field of the animal to be sorted by
+        required: false
+        schema:
+          type: string
+        example: cost
+      responses:
+        "400":
+          description: Invalid parameters provided
+          content:
+            text/plain:
+              schema:
+                type: string
+              example: No property '123' found for type 'Animal'
+        "200":
+          description: The list of animals was fetched successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Animal'
+components:
+  schemas:
+    Animal:
+      required:
+      - Cost
+      - Name
+      - Sex
+      - Type
+      - Weight
+      - category
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        category:
+          maximum: 4
+          minimum: 1
+          type: integer
+          format: int32
+        Name:
+          type: string
+        Type:
+          type: string
+        Sex:
+          type: string
+        Weight:
+          minimum: 1
+          type: integer
+          format: int32
+        Cost:
+          minimum: 1
+          type: integer
+          format: int32
