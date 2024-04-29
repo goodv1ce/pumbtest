@@ -1,26 +1,33 @@
 package com.goodvice.pumbtest.mapper;
 
 import com.goodvice.pumbtest.model.Animal;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class AnimalXmlParserTests {
+
+    AnimalXmlParser xmlParser;
+
+    @BeforeEach
+    public void setUp() {
+        xmlParser = new AnimalXmlParser();
+    }
+
     @Test
-    public void testParse() throws IOException {
+    public void parse_WithValidInputs_ListOfAnimals() throws IOException {
         MockMultipartFile file = getMockMultipartFile();
-        AnimalXmlParser xmlParser = new AnimalXmlParser();
 
         List<Animal> animals = xmlParser.parse(file);
 
         assertEquals(3, animals.size());
 
-        // check first animal
         Animal firstAnimal = animals.get(0);
         assertNull(firstAnimal.getId());
         assertEquals("Tucker", firstAnimal.getName());
@@ -30,7 +37,6 @@ public class AnimalXmlParserTests {
         assertEquals(Integer.valueOf(44), firstAnimal.getCost());
         assertNull(firstAnimal.getCategory());
 
-        // check second animal
         Animal secondAnimal = animals.get(1);
         assertNull(secondAnimal.getId());
         assertEquals("Jack", secondAnimal.getName());
@@ -40,7 +46,6 @@ public class AnimalXmlParserTests {
         assertEquals(Integer.valueOf(12), secondAnimal.getCost());
         assertNull(secondAnimal.getCategory());
 
-        // check third animal
         Animal thirdAnimal = animals.get(2);
         assertNull(thirdAnimal.getId());
         assertEquals("Zoe", thirdAnimal.getName());

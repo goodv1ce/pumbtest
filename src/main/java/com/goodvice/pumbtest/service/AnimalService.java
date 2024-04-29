@@ -80,7 +80,6 @@ public class AnimalService {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(e);
         }
-
     }
 
     /**
@@ -111,13 +110,7 @@ public class AnimalService {
         Example<Animal> example = Example.of(animal);
         List<Animal> queryResult;
         if (Objects.nonNull(sortBy)) {
-            try {
-                queryResult = animalRepository.findAll(example, Sort.by(sortBy));
-            } catch (PropertyReferenceException e) {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body(e.getMessage());
-            }
+            queryResult = animalRepository.findAll(example, Sort.by(sortBy));
         } else {
             queryResult = animalRepository.findAll(example);
         }

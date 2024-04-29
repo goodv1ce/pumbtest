@@ -1,32 +1,40 @@
 package com.goodvice.pumbtest.mapper;
 
 import com.goodvice.pumbtest.model.Animal;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 public class AnimalCsvParserTests {
+    AnimalFileParser csvParser;
+
+    @BeforeEach
+    public void setUp() {
+        csvParser = new AnimalCsvParser();
+    }
+
     @Test
-    public void testParse() throws IOException {
+    public void parse_WithValidInputs_ListOfAnimals() throws IOException {
         String content = """
                 Name,Type,Sex,Weight,Cost
                 Buddy,cat,female,41,78
                 Cooper,,female,46,23
                 Rocky,dog,,18,""";
 
-        MockMultipartFile file = new MockMultipartFile("animals.csv", content.getBytes());
-        AnimalCsvParser csvParser = new AnimalCsvParser();
+        MultipartFile file = new MockMultipartFile("animals.csv", content.getBytes());
 
         List<Animal> animals = csvParser.parse(file);
 
         assertEquals(3, animals.size());
 
-        // check first animal
         Animal firstAnimal = animals.get(0);
         assertNull(firstAnimal.getId());
         assertEquals("Buddy", firstAnimal.getName());
@@ -36,7 +44,6 @@ public class AnimalCsvParserTests {
         assertEquals(Integer.valueOf(78), firstAnimal.getCost());
         assertNull(firstAnimal.getCategory());
 
-        // check second animal
         Animal secondAnimal = animals.get(1);
         assertNull(secondAnimal.getId());
         assertEquals("Cooper", secondAnimal.getName());
@@ -46,7 +53,6 @@ public class AnimalCsvParserTests {
         assertEquals(Integer.valueOf(23), secondAnimal.getCost());
         assertNull(secondAnimal.getCategory());
 
-        // check third animal
         Animal thirdAnimal = animals.get(2);
         assertNull(thirdAnimal.getId());
         assertEquals("Rocky", thirdAnimal.getName());
@@ -56,6 +62,4 @@ public class AnimalCsvParserTests {
         assertNull(thirdAnimal.getCost());
         assertNull(thirdAnimal.getCategory());
     }
-
-
 }

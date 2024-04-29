@@ -1,30 +1,25 @@
 package com.goodvice.pumbtest.validator;
 
 import com.goodvice.pumbtest.model.Animal;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class AnimalValidatorTest {
-    @Test
-    public void testValidateModels() {
-        AnimalValidator validator = new AnimalValidator();
 
-        List<Animal> animals = initializeAnimalArray();
-        validator.validateModels(animals);
+public class AnimalValidatorTests {
+    AnimalValidator validator;
 
-        assertEquals(5, animals.size());
-        assertEquals(1, animals.get(0).getCategory().intValue());
-        assertEquals(2, animals.get(1).getCategory().intValue());
-        assertEquals(3, animals.get(2).getCategory().intValue());
-        assertEquals(4, animals.get(3).getCategory().intValue());
-        assertEquals(4, animals.get(4).getCategory().intValue());
+    @BeforeEach
+    public void setUp() {
+        validator = new AnimalValidator();
     }
 
-    private static List<Animal> initializeAnimalArray() {
+    @Test
+    public void validateModels_WithValidAndInvalidInputs_ListOfValidatedAnimals() {
         List<Animal> animals = new ArrayList<>();
         animals.add(animalAllArgsConstructor("test1", "", "test1", -5, null));
         animals.add(animalAllArgsConstructor("test2", "test2", "test2", 33, null));
@@ -35,7 +30,14 @@ public class AnimalValidatorTest {
         animals.add(animalAllArgsConstructor("test7", "test7", "test7", 35, 61));
         animals.add(animalAllArgsConstructor("test7", "test7", "test7", 3, 300));
 
-        return animals;
+        validator.validateModels(animals);
+
+        assertEquals(5, animals.size());
+        assertEquals(1, animals.get(0).getCategory().intValue());
+        assertEquals(2, animals.get(1).getCategory().intValue());
+        assertEquals(3, animals.get(2).getCategory().intValue());
+        assertEquals(4, animals.get(3).getCategory().intValue());
+        assertEquals(4, animals.get(4).getCategory().intValue());
     }
 
     private static Animal animalAllArgsConstructor(String name, String type, String sex, Integer weight, Integer cost) {
